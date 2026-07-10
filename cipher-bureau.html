@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Cipher Bureau</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14171F;
+    --panel:#1B202C;
+    --panel-raised:#232938;
+    --paper:#EDE6D3;
+    --paper-line:#D8CDAE;
+    --brass:#C9A227;
+    --brass-dim:#8f7420;
+    --alert:#B14A34;
+    --teal:#5B9088;
+    --text:#EAE6DA;
+    --text-dim:#9099AC;
+    --mono:'JetBrains Mono', monospace;
+    --display:'Special Elite', cursive;
+    --body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top left, rgba(201,162,39,0.06), transparent 55%),
+      var(--ink);
+    color:var(--text);
+    font-family:var(--body);
+    min-height:100vh;
+    padding:36px 20px 60px;
+  }
+  .wrap{max-width:1040px;margin:0 auto;}
+
+  /* header */
+  header{
+    text-align:center;
+    margin-bottom:34px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    letter-spacing:.35em;
+    font-size:11px;
+    color:var(--brass);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:var(--display);
+    font-size:clamp(28px,5vw,44px);
+    margin:0 0 8px;
+    color:var(--paper);
+    letter-spacing:.02em;
+  }
+  .sub{
+    color:var(--text-dim);
+    font-size:14px;
+    max-width:520px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+  .stamp{
+    display:inline-block;
+    margin-top:14px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--alert);
+    border:1px solid var(--alert);
+    padding:3px 10px;
+    border-radius:3px;
+    letter-spacing:.15em;
+    transform:rotate(-2deg);
+  }
+
+  /* tabs */
+  .tabs{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin-bottom:26px;
+    flex-wrap:wrap;
+  }
+  .tab{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    background:var(--panel);
+    color:var(--text-dim);
+    border:1px solid #2b3243;
+    padding:9px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .tab:hover{color:var(--paper);border-color:var(--brass-dim);}
+  .tab.active{
+    background:var(--brass);
+    color:#1a1608;
+    border-color:var(--brass);
+    font-weight:600;
+  }
+
+  .panel{
+    background:var(--panel);
+    border:1px solid #2b3243;
+    border-radius:14px;
+    padding:28px;
+    margin-bottom:22px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:28px;
+  }
+  @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+  label{
+    display:block;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:8px;
+  }
+  textarea, input[type=text]{
+    width:100%;
+    background:var(--paper);
+    color:#22261c;
+    border:1px solid var(--paper-line);
+    border-radius:8px;
+    padding:14px;
+    font-family:var(--mono);
+    font-size:14px;
+    line-height:1.5;
+    resize:vertical;
+  }
+  textarea{min-height:110px;}
+  textarea:focus, input:focus{outline:2px solid var(--brass); outline-offset:1px;}
+
+  .shift-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:16px;
+  }
+  input[type=range]{flex:1; accent-color:var(--brass);}
+  .shift-val{
+    font-family:var(--mono);
+    background:var(--panel-raised);
+    border:1px solid var(--brass-dim);
+    color:var(--brass);
+    padding:6px 14px;
+    border-radius:8px;
+    min-width:52px;
+    text-align:center;
+    font-weight:700;
+  }
+
+  .btn-row{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;}
+  button{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:13px;
+    border:none;
+    padding:11px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn-primary{background:var(--brass); color:#1a1608;}
+  .btn-primary:hover{background:#dab538;}
+  .btn-ghost{background:transparent; border:1px solid #384057; color:var(--text-dim);}
+  .btn-ghost:hover{color:var(--paper); border-color:var(--brass-dim);}
+  .btn-alert{background:var(--alert); color:#f4e9e4;}
+  .btn-alert:hover{background:#c9573c;}
+
+  .output-box{
+    background:var(--panel-raised);
+    border:1px dashed #384057;
+    border-radius:8px;
+    padding:14px;
+    font-family:var(--mono);
+    font-size:14px;
+    min-height:52px;
+    word-break:break-word;
+    white-space:pre-wrap;
+    color:var(--paper);
+  }
+  .output-label{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .copy-btn{
+    background:none;
+    border:none;
+    color:var(--teal);
+    font-family:var(--mono);
+    font-size:11px;
+    cursor:pointer;
+    padding:0;
+    text-decoration:underline;
+  }
+
+  /* wheel */
+  .wheel-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .wheel-svg text{
+    font-family:var(--mono);
+    font-weight:700;
+    fill:var(--ink);
+  }
+  .wheel-center{
+    font-family:var(--display);
+    font-size:12px;
+    fill:var(--paper);
+  }
+
+  section.explain{margin-top:6px;}
+  .explain h3{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 10px;
+  }
+  .explain p{font-size:13.5px; line-height:1.7; color:var(--text-dim); margin:0;}
+
+  /* crack mode */
+  .crack-table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--mono);
+    font-size:12.5px;
+    margin-top:16px;
+  }
+  .crack-table th{
+    text-align:left;
+    color:var(--teal);
+    font-weight:600;
+    padding:6px 8px;
+    border-bottom:1px solid #2b3243;
+  }
+  .crack-table td{
+    padding:6px 8px;
+    border-bottom:1px solid #232938;
+    color:var(--text-dim);
+  }
+  .crack-table tr.best td{
+    color:var(--paper);
+    background:rgba(201,162,39,0.08);
+    font-weight:600;
+  }
+  .crack-table tr.best td:first-child{color:var(--brass);}
+  .bar-cell{min-width:120px;}
+  .bar{
+    height:6px;
+    background:var(--teal);
+    border-radius:3px;
+  }
+  tr.best .bar{background:var(--brass);}
+
+  /* history */
+  .history-item{
+    font-family:var(--mono);
+    font-size:12px;
+    padding:10px 12px;
+    border-bottom:1px solid #232938;
+    color:var(--text-dim);
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .history-item .tag{
+    color:var(--brass);
+    flex-shrink:0;
+  }
+  .empty-hist{
+    color:#4a5266;
+    font-size:12.5px;
+    font-style:italic;
+    padding:10px 2px;
+  }
+
+  .hidden{display:none !important;}
+  footer{
+    text-align:center;
+    margin-top:30px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:#3d4457;
+    letter-spacing:.1em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Project 02 · Field Manual</div>
+    <h1>The Cipher Bureau</h1>
+    <p class="sub">A working Caesar-shift encoder — plus the crack tool that shows why it never stayed a secret for long.</p>
+    <div class="stamp">CLASSIFIED · SHIFT CIPHER</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="encode">Encode / Decode</div>
+    <div class="tab" data-tab="crack">Crack Without a Key</div>
+    <div class="tab" data-tab="notes">Field Notes</div>
+  </div>
+
+  <!-- ENCODE TAB -->
+  <div id="encode" class="tab-panel">
+    <div class="panel">
+      <div class="grid">
+        <div>
+          <label for="inputText">Message</label>
+          <textarea id="inputText" placeholder="Type or paste text here — letters shift, everything else (spaces, punctuation, numbers) stays put.">Meet me at the old bridge at midnight, agent 7.</textarea>
+
+          <div class="shift-row">
+            <label style="margin:0; white-space:nowrap;">Shift key</label>
+            <input type="range" id="shiftSlider" min="1" max="25" value="3">
+            <div class="shift-val" id="shiftVal">3</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" onclick="doEncrypt()">Encrypt →</button>
+            <button class="btn-ghost" onclick="doDecrypt()">← Decrypt</button>
+            <button class="btn-ghost" onclick="clearAll()">Clear</button>
+          </div>
+
+          <div style="margin-top:20px;">
+            <div class="output-label">
+              <label style="margin:0;">Output</label>
+              <button class="copy-btn" onclick="copyOutput()">Copy</button>
+            </div>
+            <div class="output-box" id="outputBox">—</div>
+          </div>
+        </div>
+
+        <div class="wheel-wrap">
+          <svg class="wheel-svg" viewBox="0 0 300 300" width="100%" id="wheelSvg">
+            <circle cx="150" cy="150" r="145" fill="none" stroke="#384057" stroke-width="1"/>
+            <circle cx="150" cy="150" r="100" fill="none" stroke="#384057" stroke-width="1" stroke-dasharray="2 4"/>
+            <g id="outerRing"></g>
+            <g id="innerRing"></g>
+            <circle cx="150" cy="150" r="34" fill="var(--panel-raised)" stroke="var(--brass-dim)"/>
+            <text x="150" y="146" text-anchor="middle" class="wheel-center">SHIFT</text>
+            <text x="150" y="164" text-anchor="middle" class="wheel-center" id="wheelShiftLabel" style="font-size:20px; font-weight:700; fill:var(--brass);">3</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="output-label" style="margin-bottom:6px;">
+        <label style="margin:0;">Session log</label>
+        <button class="copy-btn" onclick="clearHistory()">Clear log</button>
+      </div>
+      <div id="historyList"><div class="empty-hist">Nothing encoded yet this session.</div></div>
+    </div>
+  </div>
+
+  <!-- CRACK TAB -->
+  <div id="crack" class="tab-panel hidden">
+    <div class="panel">
+      <label for="crackInput">Encrypted text (no key given)</label>
+      <textarea id="crackInput" placeholder="Paste ciphertext here and let the bureau guess the shift.">Phhw ph dw wkh rog eulgjh dw plgqljkw, dahqw 7.</textarea>
+      <div class="btn-row">
+        <button class="btn-alert" onclick="runCrack()">Run Frequency Attack</button>
+      </div>
+      <table class="crack-table" id="crackTable"></table>
+    </div>
+    <div class="panel explain">
+      <h3>How the guess works</h3>
+      <p>English text leans heavily on a handful of letters — E, T, A, O, and N show up far more than the rest. The tool tries every one of the 25 possible shifts, scores each result against that expected letter frequency, and ranks them. The shift with text that "looks most like English" wins — no key required. This is the classic weakness that makes a plain Caesar cipher unsafe for anything real.</p>
+    </div>
+  </div>
+
+  <!-- NOTES TAB -->
+  <div id="notes" class="tab-panel hidden">
+    <div class="panel explain">
+      <h3>What this project actually demonstrates</h3>
+      <p style="margin-bottom:14px;"><strong style="color:var(--paper);">1. Encryption logic</strong> — each letter is mapped to another by a fixed offset around the alphabet (A→D under a shift of 3), wrapping from Z back to A. Case is preserved, and anything that isn't a letter (spaces, punctuation, digits) passes through untouched — a detail many basic implementations get wrong.</p>
+      <p style="margin-bottom:14px;"><strong style="color:var(--paper);">2. Decryption logic</strong> — simply shifting in the opposite direction by the same key, proving encryption and decryption are mirror operations.</p>
+      <p style="margin-bottom:14px;"><strong style="color:var(--paper);">3. Data protection basics</strong> — the crack tool is the real lesson: with only 25 possible keys and predictable letter frequency, Caesar ciphers can be broken in seconds without ever knowing the key. It's a live demo of why modern systems use much larger key spaces and randomized keys.</p>
+      <p><strong style="color:var(--paper);">4. Logic building</strong> — the wheel visual is generated purely from the shift value, so rotating it correctly required treating the alphabet as a circular, indexable structure rather than a flat string.</p>
+    </div>
+  </div>
+
+  <footer>THE CIPHER BUREAU — FOR EDUCATIONAL USE ONLY</footer>
+</div>
+
+<script>
+const A_CODE = 65, a_code = 97;
+
+function shiftChar(ch, shift){
+  const code = ch.charCodeAt(0);
+  if(code>=A_CODE && code<=A_CODE+25){
+    return String.fromCharCode((code-A_CODE+shift+26)%26 + A_CODE);
+  }
+  if(code>=a_code && code<=a_code+25){
+    return String.fromCharCode((code-a_code+shift+26)%26 + a_code);
+  }
+  return ch;
+}
+function caesarShift(text, shift){
+  return text.split('').map(c=>shiftChar(c, shift)).join('');
+}
+
+function currentShift(){ return parseInt(document.getElementById('shiftSlider').value,10); }
+
+function doEncrypt(){
+  const text = document.getElementById('inputText').value;
+  const shift = currentShift();
+  const result = caesarShift(text, shift);
+  document.getElementById('outputBox').textContent = result;
+  addHistory('ENCRYPT', shift, text, result);
+}
+function doDecrypt(){
+  const text = document.getElementById('inputText').value;
+  const shift = currentShift();
+  const result = caesarShift(text, -shift);
+  document.getElementById('outputBox').textContent = result;
+  addHistory('DECRYPT', shift, text, result);
+}
+function clearAll(){
+  document.getElementById('inputText').value='';
+  document.getElementById('outputBox').textContent='—';
+}
+function copyOutput(){
+  const t = document.getElementById('outputBox').textContent;
+  if(t && t!=='—') navigator.clipboard.writeText(t);
+}
+
+let history = [];
+function addHistory(action, shift, input, output){
+  history.unshift({action, shift, input, output, time:new Date().toLocaleTimeString()});
+  renderHistory();
+}
+function clearHistory(){ history=[]; renderHistory(); }
+function renderHistory(){
+  const el = document.getElementById('historyList');
+  if(history.length===0){ el.innerHTML = '<div class="empty-hist">Nothing encoded yet this session.</div>'; return; }
+  el.innerHTML = history.slice(0,12).map(h=>`
+    <div class="history-item">
+      <span class="tag">[${h.action} · key ${h.shift}]</span>
+      <span style="flex:1; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(h.input)} → ${escapeHtml(h.output)}</span>
+      <span>${h.time}</span>
+    </div>`).join('');
+}
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* wheel */
+function buildWheel(shift){
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const outer = document.getElementById('outerRing');
+  const inner = document.getElementById('innerRing');
+  outer.innerHTML=''; inner.innerHTML='';
+  const cx=150, cy=150, rOuter=122, rInner=78;
+  for(let i=0;i<26;i++){
+    const angle = (i/26)*2*Math.PI - Math.PI/2;
+    const ox = cx + rOuter*Math.cos(angle);
+    const oy = cy + rOuter*Math.sin(angle);
+    const oCircle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    oCircle.setAttribute('cx',ox); oCircle.setAttribute('cy',oy); oCircle.setAttribute('r',13);
+    oCircle.setAttribute('fill','var(--paper)'); oCircle.setAttribute('stroke','var(--paper-line)');
+    outer.appendChild(oCircle);
+    const oText = document.createElementNS('http://www.w3.org/2000/svg','text');
+    oText.setAttribute('x',ox); oText.setAttribute('y',oy+4.5); oText.setAttribute('text-anchor','middle');
+    oText.setAttribute('font-size','12'); oText.textContent = alphabet[i];
+    outer.appendChild(oText);
+
+    const shifted = alphabet[(i+shift)%26];
+    const iCircle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    iCircle.setAttribute('cx',cx + rInner*Math.cos(angle));
+    iCircle.setAttribute('cy',cy + rInner*Math.sin(angle));
+    iCircle.setAttribute('r',12);
+    iCircle.setAttribute('fill','var(--teal)'); iCircle.setAttribute('stroke','#3d6d66');
+    inner.appendChild(iCircle);
+    const iText = document.createElementNS('http://www.w3.org/2000/svg','text');
+    iText.setAttribute('x', cx + rInner*Math.cos(angle));
+    iText.setAttribute('y', cy + rInner*Math.sin(angle)+4);
+    iText.setAttribute('text-anchor','middle');
+    iText.setAttribute('font-size','11'); iText.setAttribute('fill','#0d1a18');
+    iText.textContent = shifted;
+    inner.appendChild(iText);
+  }
+  document.getElementById('wheelShiftLabel').textContent = shift;
+}
+
+document.getElementById('shiftSlider').addEventListener('input', e=>{
+  document.getElementById('shiftVal').textContent = e.target.value;
+  buildWheel(parseInt(e.target.value,10));
+});
+buildWheel(3);
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
+    document.getElementById(tab.dataset.tab).classList.remove('hidden');
+  });
+});
+
+/* crack mode: frequency analysis */
+const ENGLISH_FREQ = {A:8.17,B:1.49,C:2.78,D:4.25,E:12.70,F:2.23,G:2.02,H:6.09,I:6.97,J:0.15,
+K:0.77,L:4.03,M:2.41,N:6.75,O:7.51,P:1.93,Q:0.10,R:5.99,S:6.33,T:9.06,U:2.76,V:0.98,W:2.36,X:0.15,Y:1.97,Z:0.07};
+
+function scoreText(text){
+  const counts = {};
+  let total = 0;
+  for(const ch of text.toUpperCase()){
+    if(ch>='A' && ch<='Z'){ counts[ch]=(counts[ch]||0)+1; total++; }
+  }
+  if(total===0) return 999;
+  let chiSquare = 0;
+  for(const letter in ENGLISH_FREQ){
+    const observed = counts[letter]||0;
+    const expected = (ENGLISH_FREQ[letter]/100)*total;
+    chiSquare += Math.pow(observed-expected,2)/(expected||1);
+  }
+  return chiSquare;
+}
+
+function runCrack(){
+  const cipherText = document.getElementById('crackInput').value;
+  const results = [];
+  for(let shift=1; shift<=25; shift++){
+    const guess = caesarShift(cipherText, -shift);
+    results.push({shift, guess, score: scoreText(guess)});
+  }
+  results.sort((a,b)=>a.score-b.score);
+  const maxScore = Math.max(...results.map(r=>r.score));
+  const table = document.getElementById('crackTable');
+  table.innerHTML = `<tr><th>Key</th><th>Decoded attempt</th><th>Match confidence</th></tr>` +
+    results.map((r,idx)=>{
+      const pct = Math.max(4, 100 - (r.score/maxScore)*100);
+      return `<tr class="${idx===0?'best':''}">
+        <td>${r.shift}</td>
+        <td>${escapeHtml(r.guess.slice(0,60))}${r.guess.length>60?'…':''}</td>
+        <td class="bar-cell"><div class="bar" style="width:${pct}%;"></div></td>
+      </tr>`;
+    }).join('');
+}
+</script>
+</body>
+</html>
